@@ -107,7 +107,11 @@ function readSides(cells: HTMLCollectionOf<HTMLTableCellElement>): Pick<DiffRow,
     return { old: readLine(first, first, second), new: readLine(third, third, fourth) };
   }
 
-  return { old: readLine(first, second, third), new: readLine(second, second, third) };
+  const kind = readKind(third);
+  return {
+    old: kind === 'addition' ? undefined : readLine(first, second, third),
+    new: kind === 'deletion' ? undefined : readLine(second, second, third),
+  };
 }
 
 function readLine(
@@ -115,7 +119,9 @@ function readLine(
   gutter: HTMLElement,
   textCell: HTMLElement,
 ): DiffLine | undefined {
-  const numberText = numberCell.querySelector('code')?.textContent.trim();
+  // PR pages keep the number in an attribute; commit pages render it in a <code> child.
+  const numberText =
+    numberCell.dataset.lineNumber ?? numberCell.querySelector('code')?.textContent.trim();
   const content = textCell.querySelector<HTMLElement>(LINE_CONTENT);
   if (!numberText || !content) return undefined;
 
