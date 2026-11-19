@@ -2,6 +2,8 @@
 
 IDE-style code folding for GitHub pull request diffs (`/pull/*/changes`) and commit pages, in unified and split view.
 
+![Origami auto-folding Vitest test bodies in a GitHub diff](docs/screenshot.png)
+
 - Fold any indented block from the gutter chevron; click the `⋯ N lines` pill to unfold.
 - **Fold all / Unfold all** in each file header.
 - Optionally auto-folds `it`/`test` and setup hook bodies in `*.test.*` / `*.spec.*` files (toolbar popup).
