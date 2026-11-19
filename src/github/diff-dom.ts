@@ -97,7 +97,7 @@ function readPath(region: Element): string | undefined {
 
 /**
  * Split rows: old number, old text, new number, new text (an absent side has empty cells).
- * Unified rows: old number, new number, shared text; toggles for both sides go in the new number cell.
+ * Unified rows: old number, new number, shared text; toggles for both sides go in the leftmost (old number) cell.
  */
 function readSides(cells: HTMLCollectionOf<HTMLTableCellElement>): Pick<DiffRow, 'old' | 'new'> {
   const [first, second, third, fourth] = cells;
@@ -109,8 +109,8 @@ function readSides(cells: HTMLCollectionOf<HTMLTableCellElement>): Pick<DiffRow,
 
   const kind = readKind(third);
   return {
-    old: kind === 'addition' ? undefined : readLine(first, second, third),
-    new: kind === 'deletion' ? undefined : readLine(second, second, third),
+    old: kind === 'addition' ? undefined : readLine(first, first, third),
+    new: kind === 'deletion' ? undefined : readLine(second, first, third),
   };
 }
 

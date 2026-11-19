@@ -2,30 +2,34 @@ tr[data-origami-hidden] {
   display: none !important;
 }
 
+td:has(> .origami-toggle) {
+  position: relative;
+}
+
+/* Left edge: GitHub's hover comment button owns the right edge of the number cell. */
 .origami-toggle {
   position: absolute;
   top: 0;
-  right: -8px;
+  left: 0;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
+  width: 12px;
   height: 20px;
   padding: 0;
   border: 0;
   background: none;
   color: var(--fgColor-muted, #59636e);
   cursor: pointer;
-  opacity: 0;
 }
 
 .origami-toggle::before {
   content: '';
-  width: 6px;
-  height: 6px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
   transform: translateY(-2px) rotate(45deg);
 }
 
@@ -35,11 +39,6 @@ tr[data-origami-hidden] {
 
 .origami-toggle[aria-expanded='false']::before {
   transform: translateX(-2px) rotate(-45deg);
-}
-
-table:hover .origami-toggle,
-.origami-toggle[aria-expanded='false'] {
-  opacity: 1;
 }
 
 .origami-toggle:hover {
