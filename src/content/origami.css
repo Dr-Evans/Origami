@@ -22,15 +22,19 @@ tr[data-origami-hidden] {
 
 .origami-toggle::before {
   content: '';
-  width: 5px;
-  height: 5px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-1px) rotate(45deg);
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.origami-toggle[aria-expanded='false'] {
+  color: var(--fgColor-accent, #0969da);
 }
 
 .origami-toggle[aria-expanded='false']::before {
-  transform: translateX(-1px) rotate(-45deg);
+  transform: translateX(-2px) rotate(-45deg);
 }
 
 table:hover .origami-toggle,
