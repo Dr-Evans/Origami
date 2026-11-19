@@ -1,0 +1,89 @@
+tr[data-origami-hidden] {
+  display: none !important;
+}
+
+.origami-toggle {
+  position: absolute;
+  top: 0;
+  right: -8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fgColor-muted, #59636e);
+  cursor: pointer;
+  opacity: 0;
+}
+
+.origami-toggle::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+}
+
+.origami-toggle[aria-expanded='false']::before {
+  transform: translateX(-1px) rotate(-45deg);
+}
+
+table:hover .origami-toggle,
+.origami-toggle[aria-expanded='false'] {
+  opacity: 1;
+}
+
+.origami-toggle:hover {
+  color: var(--fgColor-default, #1f2328);
+}
+
+.origami-pill {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--bgColor-neutral-muted, #818b981f);
+  color: var(--fgColor-muted, #59636e);
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.origami-pill::before {
+  content: attr(data-label);
+}
+
+.origami-pill:hover {
+  background: var(--bgColor-accent-muted, #54aeff66);
+  color: var(--fgColor-default, #1f2328);
+}
+
+.origami-actions {
+  display: flex;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.origami-action {
+  padding: 2px 8px;
+  border: 1px solid var(--borderColor-default, #d1d9e0);
+  border-radius: 6px;
+  background: var(--bgColor-default, #fff);
+  color: var(--fgColor-default, #1f2328);
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.origami-action:hover {
+  background: var(--bgColor-muted, #f6f8fa);
+}
