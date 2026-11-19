@@ -11,18 +11,10 @@ import { findFoldRegions, type FoldRegion } from './fold-regions.ts';
 import { FoldStore } from './fold-store.ts';
 import { findAction, readKey, renderFile } from './fold-view.ts';
 
-interface ParsedTable {
-  rowCount: number;
-  firstRow: Element | null;
-  lastRow: Element | null;
-  rows: DiffRow[];
-  regions: FoldRegion[];
-}
-
 const SOFT_NAV_DONE = 'soft-nav:react-done';
 
 const store = new FoldStore();
-const parsedTables = new WeakMap<HTMLTableElement, ParsedTable>();
+const regionsByRows = new WeakMap<readonly DiffRow[], FoldRegion[]>();
 const regionKeysByPath = new Map<string, string[]>();
 let settings: Settings | undefined;
 let pagePath = location.pathname;
@@ -48,7 +40,8 @@ function render(): void {
   if (!settings || !isDiffPage(pagePath)) return;
 
   for (const file of findDiffFiles(document)) {
-    const { rows, regions } = parse(file.table, isTestFile(file.path));
+    const rows = readRows(file.table);
+    const regions = regionsFor(rows, isTestFile(file.path));
     regionKeysByPath.set(
       file.path,
       regions.map((region) => region.key),
@@ -67,30 +60,13 @@ function render(): void {
   observer.takeRecords();
 }
 
-/** Re-parses only when React replaced the table's rows. */
-function parse(table: HTMLTableElement, detectTests: boolean): ParsedTable {
-  const { rows: liveRows } = table;
-  const firstRow = liveRows.item(0);
-  const lastRow = liveRows.item(liveRows.length - 1);
-  const cached = parsedTables.get(table);
-  if (
-    cached?.rowCount === liveRows.length &&
-    cached.firstRow === firstRow &&
-    cached.lastRow === lastRow
-  ) {
-    return cached;
+function regionsFor(rows: readonly DiffRow[], detectTests: boolean): FoldRegion[] {
+  let regions = regionsByRows.get(rows);
+  if (!regions) {
+    regions = findFoldRegions(rows, detectTests);
+    regionsByRows.set(rows, regions);
   }
-
-  const rows = readRows(table);
-  const parsed = {
-    rowCount: liveRows.length,
-    firstRow,
-    lastRow,
-    rows,
-    regions: findFoldRegions(rows, detectTests),
-  };
-  parsedTables.set(table, parsed);
-  return parsed;
+  return regions;
 }
 
 function handleClick(event: MouseEvent): void {

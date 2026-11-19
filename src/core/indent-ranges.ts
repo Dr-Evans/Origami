@@ -7,7 +7,8 @@ export interface FoldRange {
 
 const TAB_WIDTH = 4;
 
-function indentOf(line: string): number | undefined {
+/** Indent width in columns, or undefined for a blank line. */
+export function indentOf(line: string): number | undefined {
   let width = 0;
 
   for (const char of line) {

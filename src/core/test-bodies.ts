@@ -1,7 +1,8 @@
 import type { FoldRange } from './indent-ranges.ts';
 
-const TEST_FILE = /\.(?:test|spec)\.[cm]?[jt]sx?$/;
-const TEST_CALL = /^\s*(?:it|test|beforeEach|afterEach|beforeAll|afterAll)(?:\.\w+)*\s*[(`]/;
+const TEST_FILE = /\.(?:test|spec)\.(?:[cm]?[jt]s|[jt]sx)$/;
+const TEST_CALL =
+  /^\s*(?:it|test|beforeEach|afterEach|beforeAll|afterAll)(?:\.(?:only|skip|todo|fails|concurrent|each))*\s*[(`]/;
 const BODY_OPEN = /(?:=>|\bfunction\b[^{]*\))\s*\{\s*(?:\/\/.*)?$/;
 const CLOSING_LINE = /^\s*[)\]}]/;
 

@@ -1,12 +1,16 @@
 import type { DiffFile, DiffRow } from '../github/diff-dom.ts';
 import type { FoldRegion } from './fold-regions.ts';
 
-export type FoldAction = 'toggle' | 'fold-all' | 'unfold-all';
+const FOLD_ACTIONS = ['toggle', 'fold-all', 'unfold-all'] as const;
+export type FoldAction = (typeof FOLD_ACTIONS)[number];
 
 const ACTION_ATTR = 'data-origami-action';
 const KEY_ATTR = 'data-origami-key';
 const HIDDEN_ATTR = 'data-origami-hidden';
 const ACTIONS_CLASS = 'origami-actions';
+const ACTION_CLASS = 'origami-action';
+const TOGGLE_CLASS = 'origami-toggle';
+const PILL_CLASS = 'origami-pill';
 
 export function findAction(
   target: EventTarget | null,
@@ -14,12 +18,10 @@ export function findAction(
   if (!(target instanceof Element)) return undefined;
 
   const element = target.closest<HTMLElement>(`[${ACTION_ATTR}]`);
-  const action = element?.getAttribute(ACTION_ATTR);
-  if (!element || (action !== 'toggle' && action !== 'fold-all' && action !== 'unfold-all')) {
-    return undefined;
-  }
+  const name = element?.getAttribute(ACTION_ATTR);
+  const action = FOLD_ACTIONS.find((candidate) => candidate === name);
 
-  return { action, element };
+  return element && action ? { action, element } : undefined;
 }
 
 export function readKey(element: HTMLElement): string | undefined {
@@ -45,7 +47,7 @@ export function renderFile(
 
   syncControls(
     file.table,
-    'origami-toggle',
+    TOGGLE_CLASS,
     regions,
     (region) => region.header.gutter,
     (toggle, region) => {
@@ -56,15 +58,14 @@ export function renderFile(
 
   syncControls(
     file.table,
-    'origami-pill',
+    PILL_CLASS,
     folded,
     (region) => region.header.content,
     (pill, region) => {
       const count = region.endRow - region.headerRow;
-      const label = `⋯ ${String(count)} ${count === 1 ? 'line' : 'lines'}`;
-      if (pill.dataset.label === label) return;
-      pill.dataset.label = label;
-      pill.ariaLabel = `Unfold ${label.slice(2)}`;
+      const lines = `${String(count)} ${count === 1 ? 'line' : 'lines'}`;
+      pill.dataset.label = `⋯ ${lines}`;
+      pill.ariaLabel = `Unfold ${lines}`;
     },
   );
 
@@ -114,8 +115,8 @@ function syncActions(container: HTMLElement | null, hasRegions: boolean): void {
   const actions = document.createElement('div');
   actions.className = ACTIONS_CLASS;
   actions.append(
-    createButton('origami-action', 'fold-all', 'Fold all'),
-    createButton('origami-action', 'unfold-all', 'Unfold all'),
+    createButton(ACTION_CLASS, 'fold-all', 'Fold all'),
+    createButton(ACTION_CLASS, 'unfold-all', 'Unfold all'),
   );
   container.prepend(actions);
 }

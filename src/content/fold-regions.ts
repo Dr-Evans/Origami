@@ -1,4 +1,4 @@
-import { findIndentRanges, type FoldRange } from '../core/indent-ranges.ts';
+import { findIndentRanges, indentOf, type FoldRange } from '../core/indent-ranges.ts';
 import { findTestBodies } from '../core/test-bodies.ts';
 import type { DiffLine, DiffRow, Side } from '../github/diff-dom.ts';
 
@@ -18,16 +18,34 @@ interface SideLine {
 }
 
 /**
- * Blocks come from the new file; removed lines inside them fold along. A block made only of
- * rows without a new-side line (deleted code) folds from the old file instead.
+ * Blocks come from the new file; removed lines inside or trailing them fold along. A block made
+ * only of removed lines folds from the old file instead.
  */
 export function findFoldRegions(rows: readonly DiffRow[], detectTests: boolean): FoldRegion[] {
   return splitHunks(rows).flatMap((hunk) => [
-    ...regionsForSide(rows, hunk, 'new', detectTests),
+    ...regionsForSide(rows, hunk, 'new', detectTests).map((region) =>
+      withTrailingDeletions(rows, region),
+    ),
     ...regionsForSide(rows, hunk, 'old', detectTests).filter((region) =>
-      rows.slice(region.headerRow, region.endRow + 1).every((row) => !row.new),
+      rows
+        .slice(region.headerRow, region.endRow + 1)
+        .every((row) => !row.old || row.old.kind === 'deletion'),
     ),
   ]);
+}
+
+/** Removed lines between the block's last new line and its closing line belong to the block. */
+function withTrailingDeletions(rows: readonly DiffRow[], region: FoldRegion): FoldRegion {
+  const headerIndent = indentOf(region.header.text) ?? 0;
+  let endRow = region.endRow;
+
+  for (let next = rows[endRow + 1]; next?.old && !next.new; next = rows[endRow + 1]) {
+    const indent = indentOf(next.old.text);
+    if (indent !== undefined && indent <= headerIndent) break;
+    endRow += 1;
+  }
+
+  return { ...region, endRow };
 }
 
 function splitHunks(rows: readonly DiffRow[]): number[][] {
