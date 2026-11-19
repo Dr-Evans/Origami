@@ -6,7 +6,7 @@ td:has(> .origami-toggle) {
   position: relative;
 }
 
-/* Left edge: GitHub's hover comment button owns the right edge of the number cell. */
+/* Left of the number: GitHub's hover comment button owns the right edge of the number cell. */
 .origami-toggle {
   position: absolute;
   top: 0;
@@ -15,8 +15,9 @@ td:has(> .origami-toggle) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 12px;
-  height: 20px;
+  width: 16px;
+  height: 100%;
+  max-height: 24px;
   padding: 0;
   border: 0;
   background: none;
@@ -24,12 +25,17 @@ td:has(> .origami-toggle) {
   cursor: pointer;
 }
 
+/* PR pages right-align numbers in a wide gutter; center the chevron in the space before them. */
+.new-diff-line-number > .origami-toggle {
+  left: 16px;
+}
+
 .origami-toggle::before {
   content: '';
-  width: 5px;
-  height: 5px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
   transform: translateY(-2px) rotate(45deg);
 }
 
