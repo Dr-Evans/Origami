@@ -29,10 +29,11 @@ const FILE_REGION = '[role="region"][aria-labelledby^="heading-"]';
 const FILE_PATH = 'h3[class*="file-name"] a code';
 const HEADER_ACTIONS = '[class*="diff-file-header"] > .flex-justify-end';
 const DIFF_TABLE = 'table';
-const DIFF_ROW = 'tr.diff-line-row';
-const HUNK_CELL = 'td.diff-hunk-cell';
-const LINE_CONTENT = '.diff-text-inner';
-const LINE_CODE = 'code.diff-text';
+// PR pages use CSS-module classes plus data attributes; commit pages still use global classes.
+const DIFF_ROW = 'tr.diff-line-row, tr[class*="diffLineRow"]';
+const HUNK_CELL = 'td.diff-hunk-cell, td[data-diff-cell="hunk"]';
+const LINE_CONTENT = '.diff-text-inner, [data-diff-text-inner]';
+const LINE_CODE = 'code';
 const DIFF_PAGE = /^\/[^/]+\/[^/]+\/(?:pull\/\d+\/changes|commit\/[0-9a-f]{7,40})(?:\/|$)/;
 const DIRECTION_MARKS = /[‎‏]/g;
 
@@ -135,8 +136,9 @@ function readLine(
 }
 
 function readKind(textCell: HTMLElement): LineKind {
-  const classes = textCell.querySelector(LINE_CODE)?.classList;
-  if (classes?.contains('addition')) return 'addition';
-  if (classes?.contains('deletion')) return 'deletion';
+  const code = textCell.querySelector<HTMLElement>(LINE_CODE);
+  const type = code?.dataset.diffType;
+  if (type === 'addition' || code?.classList.contains('addition')) return 'addition';
+  if (type === 'deletion' || code?.classList.contains('deletion')) return 'deletion';
   return 'context';
 }
